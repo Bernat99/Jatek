@@ -11,7 +11,7 @@
 
 ///egy szo beolvasas egy random sorbol
 void beolvas(char *fajlNev, char szo[]);
-int kiir_es_feldolgoz(char *fajlNev);
+int kiir_es_feldolgoz(char *fajlNev, int lehetoseg);
 char beolvas_karakter();
 void kirajzol(int hiba);
 int ket_jatekos(char szo[]);

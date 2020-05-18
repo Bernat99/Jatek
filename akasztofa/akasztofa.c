@@ -7,7 +7,6 @@
 #include <conio.h>
 #include <windows.h>
 #define N 100
-#define HIBA1 7
 
 
 void beolvas(char *fajlNev, char szo[N])
@@ -24,12 +23,12 @@ void beolvas(char *fajlNev, char szo[N])
     int sor = rand() % 10 + 1;
 
     for(int i = 1; i <= sor && fscanf(be, "%s", szo) != EOF; i++);
-    printf("%s", szo);
+    //printf("%s", szo);
     fclose(be);
 }
 
 
-int kiir_es_feldolgoz(char *fajlNev)
+int kiir_es_feldolgoz(char *fajlNev, int lehetoseg)
 {
     char szo[N];
     beolvas(fajlNev, szo);
@@ -44,26 +43,27 @@ int kiir_es_feldolgoz(char *fajlNev)
         }
 
     }
+    megfejtes[hossz] = '\0';
 
     int hiba = 0, helyes = 0;
-    char ch;
-    bool f;
+    char ch, v;
+    bool f, voltSegitseg = false;
 
-    while(hiba < 7 && helyes < hossz)
+    while(hiba < lehetoseg && helyes < hossz)
     {
 
-        printf("A szo: %s\nA szo %i betubol all\tHatralevo probalkozasok szama: %i\tHelytelen karakterek: ", megfejtes, strlen(szo), 7 - hiba);
+        printf("A szo: %s\nA szo %i betubol all\tHatralevo probalkozasok szama: %i\tHelytelen karakterek: ", megfejtes, strlen(szo), lehetoseg - hiba);
         for(int i = 0; i < hiba; i++)
         {
             printf("%c, ", helytelen[i]);
         }
         printf("\nIrj be egy karaktert!\n");
-        kirajzol(hiba);
+        //kirajzol(hiba);
         ch = getche();
         f = false;
         for(int i = 0; i < hossz; i++)
         {
-            if(ch == szo[i])
+            if(ch == szo[i] && megfejtes[i] == '_')
             {
                 megfejtes[i] = ch;
                 f = true;
@@ -81,27 +81,32 @@ int kiir_es_feldolgoz(char *fajlNev)
             Sleep(1500);
         }
 
-        if(hiba == 6)
+        if(hiba == lehetoseg / 2 && !voltSegitseg)
         {
-            printf("Egy probalkozasod maradt\nA gep segit egy karaktert\n");
-            Sleep(1500);
-            segitseg(szo,megfejtes);
-            helyes++;
+            voltSegitseg = true;
+            printf("Szeretned hogy a gep segitsen egy karaktert? (i-igen, barmi mas-nem)\n");
+            v = getch();
+            if(v == 'i')
+            {
+                segitseg(szo,megfejtes);
+                helyes++;
+            }
         }
 
         system("CLS");
     }
+    printf("A helyes megfejtes: %s\n", szo);
 
-    if(hiba >= 7)
+    if(hiba >= lehetoseg)
     {
-        printf("Vesztettél :(\n");
+        printf("Vesztettel :(\n");
         Sleep(2000);
         return helyes;
     }
     return 25;
 }
 
-void kirajzol(int hiba)
+/*void kirajzol(int hiba)
 {
     switch(hiba)
     {
@@ -113,7 +118,7 @@ void kirajzol(int hiba)
         case 6: printf("|-----\n|    O\n|   -|-\n|\n"); break;
         case 7: printf("|-----\n|    O\n|   -|-\n|   / "); printf("\\");break;
     }
-}
+}*/
 
 int ket_jatekos(char szo[N])
 {
@@ -127,7 +132,7 @@ int ket_jatekos(char szo[N])
         }
 
     }
-
+    megfejtes[hossz] = '\0';
     int hiba = 0, helyes = 0;
     char ch;
     bool f;
@@ -140,12 +145,12 @@ int ket_jatekos(char szo[N])
             printf("%c, ", helytelen[i]);
         }
         printf("\nIrj be egy karaktert!\n");
-        kirajzol(hiba);
+        //kirajzol(hiba);
         ch = getche();
         f = false;
         for(int i = 0; i < hossz; i++)
         {
-            if(ch == szo[i])
+            if(ch == szo[i] && megfejtes[i] == '_')
             {
                 megfejtes[i] = ch;
                 f = true;
@@ -163,31 +168,34 @@ int ket_jatekos(char szo[N])
             Sleep(1500);
         }
 
-        if(hiba == 6)
+        /*if(hiba == 6)
         {
             printf("Egy probalkozasod maradt\nA gep segit egy karaktert\n");
             Sleep(1500);
             segitseg(szo,megfejtes);
             helyes++;
-        }
+        }*/
 
         system("CLS");
     }
+    printf("A helyes megfejtes: %s\n", szo);
     if(hiba >= 7)
     {
-        printf("Vesztettel :(\n");
-        Sleep(2000);
+        //printf("Vesztettel :(\n");
+
         return helyes;
     }
+
     return 25;
 }
 
 char jatek_tipusa()
 {
-    printf("1: Egy szemely jatszik.\n2: Ket szemely jatszik.");
+    printf("\t\t\tSZOJATEK\n\n");
+    printf("1: Egy szemely jatszik, 7 probalkozasi lehetoseggel.\n2: Ket szemely jatszik.\n3: Egy szemely jatszik, 12 probalkozasi lehetoseggel.\n");
     char valasz = getch();
     printf("%c ",valasz);
-    while(valasz != '1' && valasz != '2')
+    while(valasz != '1' && valasz != '2' && valasz != '3')
     {
         printf("Helytelen valasztas!\nProbald ujra\n");
         valasz = getch();
@@ -204,20 +212,70 @@ int jatek(char valasz)
     int pont;
     if(valasz == '1')
     {
-        pont = kiir_es_feldolgoz("szavak.txt");
+        pont = kiir_es_feldolgoz("szavak.txt", 7);
         return pont;
     }
     else
     {
-        printf("Az elso jatekos irjon be egy szavat, amit a masodik jatekos kell kitalaljon\n");
-        scanf("%s", szo);
-        printf("A masodik jatekos talalja ki a szavat!\n");
-        //Sleep(1000);
-        system("cls");
-        ket_jatekos(szo);
+        if(valasz == '2')
+        {
+            char ch;
+            int i = 1, elsoPontja = 0, masodikPontja = 0, x;
+            char nev1[N], nev2[N];
 
+            printf("Irajtok be a neveket\nElso jatekos neve:");
+            scanf("%s", nev1);
+            printf("Masodik jatekos neve: ");
+            scanf("%s", nev2);
+
+            do
+            {
+                printf("%s irjon be egy szavat, amit %s kell kitalaljon\n", i % 2 == 1 ? nev1 : nev2, i % 2 == 0 ? nev1 : nev2);
+                scanf("%s", szo);
+                printf("%s talalja ki a szavat!\n",i % 2 == 1 ? nev2 : nev1);
+                //Sleep(1000);
+                system("cls");
+
+
+                x = ket_jatekos(szo);
+                printf("Szeretnetek meg jatszani? (i-igen, barmi mas-nem)\n");
+                ch = getch();
+                if(i % 2 == 0)
+                {
+                    elsoPontja += x;
+                }
+                else
+                {
+                    masodikPontja += x;
+                }
+                i++;
+            }
+            while(ch == 'i');
+            printf("%s pontja: %i\n%s pontja: %i\n", nev1,
+                   elsoPontja, nev2, masodikPontja);
+            if(elsoPontja > masodikPontja)
+            {
+                printf("%s nyert\n", nev1);
+            }
+            else
+            {
+                if(masodikPontja > elsoPontja)
+                {
+                    printf("%s nyert\n", nev2);
+                }
+                else
+                {
+                    printf("A pontszamok egyenlok\n");
+                }
+            }
+        }
+        else
+            if(valasz == '3')
+            {
+                pont = kiir_es_feldolgoz("szavak.txt", 12);
+                return pont;
+            }
     }
-
 }
 
 void ismetles()
@@ -229,33 +287,39 @@ void ismetles()
     do
     {
         aktualis_pont = jatek(valasz);
-        pontok += aktualis_pont;
-        printf("Ebben a jatekben elert pontod: %i\nAz osszpontszamod: %i\n", aktualis_pont, pontok);
-        printf("Szeretnel meg jatszani? (i-igen, barmi mas-nem)\n");
-        ch = getch();
-        system("cls");
-
+        if(valasz == '1')
+        {
+            pontok += aktualis_pont;
+            printf("Ebben a korben elert pontod: %i\nAz osszpontszamod: %i\n", aktualis_pont, pontok);
+            printf("Szeretnel meg jatszani? (i-igen, barmi mas-nem)\n");
+            ch = getch();
+            system("cls");
+        }
     }
     while(ch == 'i');
-    bk = fopen("rekord.txt", "rt");
-    if(!bk)
+    if(valasz == '1')
     {
-        printf("Hianyzik a rekord.txt fájl!!!");
-        exit(1);
-    }
-    int rekord;
-    fscanf(bk,"%i",&rekord);
-    system("cls");
-    printf("Az eddigi rekord: %i\n", rekord);
-    fclose(bk);
-    if(aktualis_pont > rekord)
-    {
-        remove("rekord.txt");
-        bk = fopen("rekord.txt", "wt");
-        fprintf(bk,"%i",pontok);
+        bk = fopen("rekord.txt", "rt");
+        if(!bk)
+        {
+            printf("Hianyzik a rekord.txt fajl!!!");
+            exit(1);
+        }
+        int rekord;
+        fscanf(bk,"%i",&rekord);
+        //system("cls");
+        printf("Az eddigi rekord: %i\nA te pontszamod: %i\n", rekord, pontok);
         fclose(bk);
-        printf("Rekordott dontottel!\nEddigi rekord: %i, a te pontszamod: %i", rekord, pontok);
+        if(aktualis_pont > rekord)
+        {
+            remove("rekord.txt");
+            bk = fopen("rekord.txt", "wt");
+            fprintf(bk,"%i",pontok);
+            fclose(bk);
+            printf("Gratualok! Rekordott dontottel!\n");
+        }
     }
+
 
 }
 
@@ -274,4 +338,3 @@ void segitseg(char szo[], char megfejtes[])
         }
     }
 }
-
