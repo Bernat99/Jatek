@@ -20,7 +20,7 @@ void beolvas(char *fajlNev, char szo[N])
     }
 
     srand(time(NULL));
-    int sor = rand() % 10 + 1;
+    int sor = rand() % 19 + 1;
 
     for(int i = 1; i <= sor && fscanf(be, "%s", szo) != EOF; i++);
     //printf("%s", szo);
@@ -287,7 +287,7 @@ void ismetles()
     do
     {
         aktualis_pont = jatek(valasz);
-        if(valasz == '1')
+        if(valasz == '1' || valasz == '3')
         {
             pontok += aktualis_pont;
             printf("Ebben a korben elert pontod: %i\nAz osszpontszamod: %i\n", aktualis_pont, pontok);
@@ -297,7 +297,7 @@ void ismetles()
         }
     }
     while(ch == 'i');
-    if(valasz == '1')
+    if(valasz == '1' || valasz == '3')
     {
         bk = fopen("rekord.txt", "rt");
         if(!bk)
@@ -310,13 +310,13 @@ void ismetles()
         //system("cls");
         printf("Az eddigi rekord: %i\nA te pontszamod: %i\n", rekord, pontok);
         fclose(bk);
-        if(aktualis_pont > rekord)
+        if(pontok > rekord)
         {
             remove("rekord.txt");
             bk = fopen("rekord.txt", "wt");
             fprintf(bk,"%i",pontok);
             fclose(bk);
-            printf("Gratualok! Rekordott dontottel!\n");
+            printf("Gratulalok! Rekordott dontottel!\n");
         }
     }
 
