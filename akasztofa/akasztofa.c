@@ -6,7 +6,8 @@
 #include "akasztofa.h"
 #include <conio.h>
 #include <windows.h>
-#define N 100
+#define N 20
+#define SZAVAK 19
 
 
 void beolvas(char *fajlNev, char szo[N])
@@ -20,9 +21,10 @@ void beolvas(char *fajlNev, char szo[N])
     }
 
     srand(time(NULL));
-    int sor = rand() % 19 + 1;
+    int sor = rand() % SZAVAK + 1;
 
     for(int i = 1; i <= sor && fscanf(be, "%s", szo) != EOF; i++);
+
     //printf("%s", szo);
     fclose(be);
 }
